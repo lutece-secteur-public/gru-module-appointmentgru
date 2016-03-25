@@ -41,17 +41,30 @@ public  class AppointmentGruService {
 	{
 	
 		AppointmentGru appointmentGru = new AppointmentGru(appointment);	
+                String strGuid = null;
+                String strCuid = null;
                 //hack for appointment when they make guid = admin admin
-		String strGuid = StringUtils.deleteWhitespace(appointment.getIdUser());
+                if(StringUtils.isNumeric(appointment.getIdUser()))
+                {
+                strCuid = appointment.getIdUser();
+                }
+                else 
+                {
+                 strGuid = appointment.getIdUser();
+                }
+		
+		 
+                
                 AppLogService.info("AppointmentGru  : GUID from appointment : "+strGuid);
-		String strCuid = null;
+		
 		Customer gruCustomer  = ProvisioningService.processGuidCuid( strGuid, strCuid, buildUserFromAppointment(appointment) );
-		AppLogService.info("\n\n\n------------------ AppointmentGru  -----------------------------");
-		AppLogService.info("AppointmentGru  : gruCustomer.getAccountGuid() : "+gruCustomer.getAccountGuid());
-		AppLogService.info("AppointmentGru  : gruCustomer.getId() : "+gruCustomer.getId());
 		//call provisioning
 		if(gruCustomer!=null)
 		{
+                    	AppLogService.info("\n\n\n------------------ AppointmentGru  -----------------------------");
+		        AppLogService.info("AppointmentGru  : gruCustomer.getAccountGuid() : "+gruCustomer.getAccountGuid());
+	         	AppLogService.info("AppointmentGru  : gruCustomer.getId() : "+gruCustomer.getId());
+	
 			appointmentGru.setGuid(gruCustomer.getAccountGuid());
 			appointmentGru.setCuid(gruCustomer.getId()); 
 			appointmentGru.setMobilePhoneNumber(gruCustomer.getMobilePhone()); 
