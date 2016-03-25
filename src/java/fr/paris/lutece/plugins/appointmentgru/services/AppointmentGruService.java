@@ -12,6 +12,7 @@ import fr.paris.lutece.plugins.customerprovisioning.services.ProvisioningService
 import fr.paris.lutece.plugins.gru.business.customer.Customer;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppLogService;
+import org.apache.commons.lang.StringUtils;
 
 public  class AppointmentGruService {
 
@@ -40,7 +41,9 @@ public  class AppointmentGruService {
 	{
 	
 		AppointmentGru appointmentGru = new AppointmentGru(appointment);	
-		String strGuid = appointment.getIdUser();
+                //hack for appointment when they make guid = admin admin
+		String strGuid = StringUtils.deleteWhitespace(appointment.getIdUser());
+                AppLogService.info("AppointmentGru  : GUID from appointment : "+strGuid);
 		String strCuid = null;
 		Customer gruCustomer  = ProvisioningService.processGuidCuid( strGuid, strCuid, buildUserFromAppointment(appointment) );
 		AppLogService.info("\n\n\n------------------ AppointmentGru  -----------------------------");
