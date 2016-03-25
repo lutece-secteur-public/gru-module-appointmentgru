@@ -47,13 +47,35 @@ public class AppointmentGru
 
     // Variables declarations 
   
+  
     private String _strGuid;    
     private int _nCuid;
     Appointment appointment;
     
+      private String _strMobilePhoneNumber;    
+    
     public AppointmentGru(Appointment appointment)
     {
     	this.appointment=appointment;
+    }
+    
+    
+     /**
+     * Returns the _strMobilePhoneNumber
+     * @return The _strMobilePhoneNumber
+     */
+    public String getMobilePhoneNumber( )
+    {
+        return _strMobilePhoneNumber;
+    }
+
+    /**
+     * Sets the mobilePhoneNumber
+     * @param mobilePhoneNumber The mobilePhoneNumber
+     */ 
+    public void setMobilePhoneNumber( String mobilePhoneNumber )
+    {
+        _strMobilePhoneNumber = mobilePhoneNumber;
     }
 
   

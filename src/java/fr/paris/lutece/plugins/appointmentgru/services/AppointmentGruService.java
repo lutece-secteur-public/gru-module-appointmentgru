@@ -50,7 +50,8 @@ public  class AppointmentGruService {
 		if(gruCustomer!=null)
 		{
 			appointmentGru.setGuid(gruCustomer.getAccountGuid());
-			appointmentGru.setCuid(gruCustomer.getId());
+			appointmentGru.setCuid(gruCustomer.getId()); 
+			appointmentGru.setMobilePhoneNumber(gruCustomer.getMobilePhone()); 
 		}		
 	
 		
