@@ -36,7 +36,7 @@ public  class AppointmentGruService {
         return _instance;
     }
 	
-	public static AppointmentGru getAppointmentGru(Appointment appointment)
+	public  AppointmentGru getAppointmentGru(Appointment appointment)
 	{
 	
 		AppointmentGru appointmentGru = new AppointmentGru(appointment);	
@@ -57,7 +57,7 @@ public  class AppointmentGruService {
 		return appointmentGru;
 	}
 	
-	  private static UserDTO buildUserFromAppointment( Appointment appointment )
+	  private  UserDTO buildUserFromAppointment( Appointment appointment )
 	    {
 	        UserDTO user = null;
 
