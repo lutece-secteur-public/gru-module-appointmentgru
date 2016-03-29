@@ -48,17 +48,18 @@ public  class AppointmentGruService {
                 if(StringUtils.isNumeric(appointment.getIdUser()))
                 {
                 strCuid = appointment.getIdUser();
-                  AppLogService.info("AppointmentGru DEBUT  : strCuid OK "+appointment.getIdUser());
+                  AppLogService.info("AppointmentGru TEST  : strCuid OK "+appointment.getIdUser());
                 }
                 else 
                 {
                  strGuid = appointment.getIdUser();
-                    AppLogService.info("AppointmentGru DEBUT  : strGuid OK "+appointment.getIdUser()); 
+                    AppLogService.info("AppointmentGru TEST  : strGuid OK "+appointment.getIdUser()); 
                 }
 		
 		 
                 
-                AppLogService.info("AppointmentGru  : GUID from appointment : "+strGuid);
+                AppLogService.info("AppointmentGru  : GUID from appointment Guid: "+strGuid);
+                AppLogService.info("AppointmentGru  : GUID from appointment Cuid: "+strCuid);
 		
 		Customer gruCustomer  = ProvisioningService.processGuidCuid( strGuid, strCuid, buildUserFromAppointment(appointment) );
 		//call provisioning
