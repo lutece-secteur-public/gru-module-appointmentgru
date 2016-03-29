@@ -44,13 +44,16 @@ public  class AppointmentGruService {
                 String strGuid = null;
                 String strCuid = null;
                 //hack for appointment when they make guid = admin admin
+                   AppLogService.info("AppointmentGru DEBUT  : appointment.getIdUser() : "+appointment.getIdUser());
                 if(StringUtils.isNumeric(appointment.getIdUser()))
                 {
                 strCuid = appointment.getIdUser();
+                  AppLogService.info("AppointmentGru DEBUT  : strCuid OK "+appointment.getIdUser());
                 }
                 else 
                 {
                  strGuid = appointment.getIdUser();
+                    AppLogService.info("AppointmentGru DEBUT  : strGuid OK "+appointment.getIdUser());
                 }
 		
 		 
