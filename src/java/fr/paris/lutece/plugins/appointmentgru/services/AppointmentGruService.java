@@ -53,7 +53,7 @@ public  class AppointmentGruService {
                 else 
                 {
                  strGuid = appointment.getIdUser();
-                    AppLogService.info("AppointmentGru DEBUT  : strGuid OK "+appointment.getIdUser());
+                    AppLogService.info("AppointmentGru DEBUT  : strGuid OK "+appointment.getIdUser()); 
                 }
 		
 		 
