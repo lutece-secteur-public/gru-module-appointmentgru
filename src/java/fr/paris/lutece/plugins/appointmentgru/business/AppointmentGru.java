@@ -30,85 +30,116 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * License 1.0
- */ 
+ */
 package fr.paris.lutece.plugins.appointmentgru.business;
-
 
 import fr.paris.lutece.plugins.appointment.business.Appointment;
 
 
-
+// TODO: Auto-generated Javadoc
 /**
- * This is the business class for the object AppointmentGru
- */ 
-public class AppointmentGru 
+ * This is the business class for the object AppointmentGru.
+ */
+public class AppointmentGru
 {
-    private static final long serialVersionUID = 1L;
-
+    /** The _str guid. */
     // Variables declarations 
-  
-  
-    private String _strGuid;    
+    private String _strGuid;
+
+    /** The _n cuid. */
     private int _nCuid;
-    Appointment appointment;
-    
-      private String _strMobilePhoneNumber;    
-    
-    public AppointmentGru(Appointment appointment)
+
+    /** The _appointment. */
+    private Appointment _appointment;
+
+    /** The _str mobile phone number. */
+    private String _strMobilePhoneNumber;
+
+    /**
+     * Instantiates a new appointment gru.
+     *
+     * @param appointment the appointment
+     */
+    public AppointmentGru( Appointment appointment )
     {
-    	this.appointment=appointment;
+        setAppointment( appointment );
     }
-    
-    
-     /**
-     * Returns the _strMobilePhoneNumber
+
+    /**
+     * Gets the appointment.
+     *
+     * @return the _appointment
+     */
+    public Appointment getAppointment(  )
+    {
+        return _appointment;
+    }
+
+    /**
+     * Sets the appointment.
+     *
+     * @param appointment the new appointment
+     */
+    public void setAppointment( Appointment appointment )
+    {
+        this._appointment = appointment;
+    }
+
+    /**
+     * Returns the _strMobilePhoneNumber.
+     *
      * @return The _strMobilePhoneNumber
      */
-    public String getMobilePhoneNumber( )
+    public String getMobilePhoneNumber(  )
     {
         return _strMobilePhoneNumber;
     }
 
     /**
-     * Sets the mobilePhoneNumber
+     * Sets the mobilePhoneNumber.
+     *
      * @param mobilePhoneNumber The mobilePhoneNumber
-     */ 
+     */
     public void setMobilePhoneNumber( String mobilePhoneNumber )
     {
         _strMobilePhoneNumber = mobilePhoneNumber;
     }
 
-  
     /**
-     * Returns the Guid
+     * Returns the Guid.
+     *
      * @return The Guid
      */
-    public String getGuid( )
+    public String getGuid(  )
     {
         return _strGuid;
     }
 
     /**
-     * Sets the Guid
+     * Sets the Guid.
+     *
      * @param strGuid The Guid
-     */ 
+     */
     public void setGuid( String strGuid )
     {
         _strGuid = strGuid;
     }
+
     /**
-     * Returns the Cuid
+     * Returns the Cuid.
+     *
      * @return The Cuid
      */
-    public int getCuid( )
+    public int getCuid(  )
     {
         return _nCuid;
     }
 
     /**
-     * Sets the Cuid
+     * Sets the Cuid.
+     *
      * @param nCuid The Cuid
-     */ 
+     */
     public void setCuid( int nCuid )
     {
         _nCuid = nCuid;
