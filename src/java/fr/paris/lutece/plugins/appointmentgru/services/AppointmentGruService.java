@@ -78,7 +78,7 @@ public class AppointmentGruService
         return _instance;
     }
 
-    /**
+    /** 
      * Gets the appointment gru.
      *
      * @param appointment the appointment
