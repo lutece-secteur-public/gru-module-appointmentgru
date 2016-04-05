@@ -33,13 +33,20 @@
  */
 package fr.paris.lutece.plugins.appointmentgru.services;
 
+import java.util.List;
+
 import fr.paris.lutece.plugins.appointment.business.Appointment;
+import fr.paris.lutece.plugins.appointment.business.AppointmentHome;
 import fr.paris.lutece.plugins.appointmentgru.business.AppointmentGru;
 import fr.paris.lutece.plugins.customerprovisioning.business.UserDTO;
 import fr.paris.lutece.plugins.customerprovisioning.services.ProvisioningService;
+import fr.paris.lutece.plugins.genericattributes.business.Entry;
+import fr.paris.lutece.plugins.genericattributes.business.EntryHome;
+import fr.paris.lutece.plugins.genericattributes.business.Response;
 import fr.paris.lutece.plugins.gru.business.customer.Customer;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppLogService;
+import fr.paris.lutece.portal.service.util.AppPropertiesService;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -50,6 +57,7 @@ import org.apache.commons.lang.StringUtils;
 public class AppointmentGruService
 {
     public static final String BEAN_NAME = "appointmentgru.appointmentGruService";
+    private static final String POSITION_PHONE_NUMBER = "notifygru-appointmentgru.config.provider.PositionUserPhoneNumber";
 
     /**
     * Instance of the service
@@ -133,8 +141,34 @@ public class AppointmentGruService
             user.setLastname( appointment.getLastName(  ) );
             user.setEmail( appointment.getEmail(  ) );
             user.setUid( appointment.getIdUser(  ) );
+            user.setTelephoneNumber( getPhoneNumber( appointment ) );
         }
 
         return user;
+    }
+    
+    /**
+     * Gets the phone number.
+     *
+     * @param appointment the appointment
+     * @return the phone number
+     */
+    private String getPhoneNumber( Appointment appointment )
+    {
+    	String strPhoneNumber = "";
+    	 List<Response> listResponses = AppointmentHome.findListResponse( appointment.getIdAppointment(  ) );
+
+         for ( Response response : listResponses )
+         { 
+             Entry entry = EntryHome.findByPrimaryKey( response.getEntry(  ).getIdEntry(  ) );
+             
+             if( entry.getPosition(  ) == AppPropertiesService.getPropertyInt( POSITION_PHONE_NUMBER , 0 ) )
+             {
+            	 strPhoneNumber = response.getResponseValue(  );
+             }
+           
+         }
+         
+         return strPhoneNumber;
     }
 }
