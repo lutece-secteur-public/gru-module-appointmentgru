@@ -53,7 +53,7 @@ import fr.paris.lutece.portal.service.util.AppLogService;
 import org.apache.commons.lang.StringUtils;
 
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The Class AppointmentGruService.
  */
@@ -63,9 +63,6 @@ public class AppointmentGruService
     /** The Constant BEAN_NAME. */
     public static final String BEAN_NAME = "appointmentgru.appointmentGruService";
     
-    /** The Constant POSITION_PHONE_NUMBER. */
-    private static final String POSITION_PHONE_NUMBER = "notifygru-appointmentgru.config.provider.PositionUserPhoneNumber";
-
     /** Instance of the service. */
     private static volatile AppointmentGruService _instance;
 
@@ -211,7 +208,7 @@ public class AppointmentGruService
     	         { 
     	             Entry entry = EntryHome.findByPrimaryKey( response.getEntry(  ).getIdEntry(  ) );
     	             
-    	             if( entry.getPosition(  ) == mapping.getMobilePhoneNumber() )
+    	             if( entry.getPosition(  ) == mapping.getFixedPhoneNumber( ) )
     	             {
     	            	 strPhoneNumber = response.getResponseValue(  );
     	             }    	           

@@ -36,7 +36,7 @@ package fr.paris.lutece.plugins.appointmentgru.business;
 import fr.paris.lutece.plugins.appointment.business.Appointment;
 
 
-// TODO: Auto-generated Javadoc
+
 /**
  * This is the business class for the object AppointmentGru.
  */
