@@ -55,6 +55,9 @@ public class AppointmentGru
     /** The _str mobile phone number. */
     private String _strMobilePhoneNumber;
 
+    /** The _str fixed phone number. */
+    private String _strFixedPhoneNumber;
+
     /**
      * Instantiates a new appointment gru.
      *
@@ -64,6 +67,29 @@ public class AppointmentGru
     {
         setAppointment( appointment );
     }
+
+
+    /**
+     * Gets the fixed phone number.
+     *
+     * @return the _strFixedPhoneNumber
+     */
+	public String getFixedPhoneNumber()
+	{
+		return _strFixedPhoneNumber;
+	}
+
+	
+	/**
+	 * Sets the fixed phone number.
+	 *
+	 * @param fixedPhoneNumber the new fixed phone number
+	 */
+	public void setFixedPhoneNumber( String fixedPhoneNumber )
+	{
+		this._strFixedPhoneNumber = fixedPhoneNumber;
+	}
+
 
     /**
      * Gets the appointment.
