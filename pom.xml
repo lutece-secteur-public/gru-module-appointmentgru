@@ -53,8 +53,8 @@
     </dependencies>
 
       <properties>
-        <componentName>Customer Provisioning Plugin</componentName>
-        <jiraProjectName>appointmentgru</jiraProjectName>
+        <componentName>Appointment GRU Module</componentName>
+        <jiraProjectName>MODUAPTGRU</jiraProjectName>
         <jiraComponentId>13052</jiraComponentId>
     </properties>
     
