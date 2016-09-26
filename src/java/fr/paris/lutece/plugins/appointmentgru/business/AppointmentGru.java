@@ -36,7 +36,6 @@ package fr.paris.lutece.plugins.appointmentgru.business;
 import fr.paris.lutece.plugins.appointment.business.Appointment;
 
 
-
 /**
  * This is the business class for the object AppointmentGru.
  */
@@ -68,28 +67,25 @@ public class AppointmentGru
         setAppointment( appointment );
     }
 
-
     /**
      * Gets the fixed phone number.
      *
      * @return the _strFixedPhoneNumber
      */
-	public String getFixedPhoneNumber()
-	{
-		return _strFixedPhoneNumber;
-	}
+    public String getFixedPhoneNumber(  )
+    {
+        return _strFixedPhoneNumber;
+    }
 
-	
-	/**
-	 * Sets the fixed phone number.
-	 *
-	 * @param fixedPhoneNumber the new fixed phone number
-	 */
-	public void setFixedPhoneNumber( String fixedPhoneNumber )
-	{
-		this._strFixedPhoneNumber = fixedPhoneNumber;
-	}
-
+    /**
+     * Sets the fixed phone number.
+     *
+     * @param fixedPhoneNumber the new fixed phone number
+     */
+    public void setFixedPhoneNumber( String fixedPhoneNumber )
+    {
+        this._strFixedPhoneNumber = fixedPhoneNumber;
+    }
 
     /**
      * Gets the appointment.
