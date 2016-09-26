@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2015, Mairie de Paris
+ * Copyright (c) 2002-2016, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,22 +33,26 @@
  */
 package fr.paris.lutece.plugins.appointmentgru.services;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import fr.paris.lutece.plugins.appointment.business.Appointment;
 import fr.paris.lutece.plugins.appointment.business.AppointmentHome;
 import fr.paris.lutece.plugins.appointmentgru.business.AppointmentGru;
-import fr.paris.lutece.plugins.customerprovisioning.business.UserDTO;
-import fr.paris.lutece.plugins.customerprovisioning.services.ProvisioningService;
 import fr.paris.lutece.plugins.genericattributes.business.Entry;
 import fr.paris.lutece.plugins.genericattributes.business.EntryHome;
 import fr.paris.lutece.plugins.genericattributes.business.Response;
-import fr.paris.lutece.plugins.gru.business.customer.Customer;
+import fr.paris.lutece.plugins.identitystore.web.rs.dto.AttributeDto;
+import fr.paris.lutece.plugins.identitystore.web.rs.dto.AuthorDto;
+import fr.paris.lutece.plugins.identitystore.web.rs.dto.IdentityChangeDto;
+import fr.paris.lutece.plugins.identitystore.web.rs.dto.IdentityDto;
+import fr.paris.lutece.plugins.identitystore.web.service.IdentityService;
 import fr.paris.lutece.plugins.modulenotifygrumappingmanager.business.NotifygruMappingManager;
 import fr.paris.lutece.plugins.modulenotifygrumappingmanager.business.NotifygruMappingManagerHome;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppLogService;
-
+import fr.paris.lutece.portal.service.util.AppPropertiesService;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -59,9 +63,27 @@ import org.apache.commons.lang.StringUtils;
  */
 public class AppointmentGruService
 {
+    // Properties
+    private static final String PROPERTIES_APPLICATION_CODE = "appointmentgru.application.code";
+    private static final String PROPERTIES_ATTRIBUTE_USER_NAME_GIVEN = "appointmentgru.attribute.user.name.given";
+    private static final String PROPERTIES_ATTRIBUTE_USER_NAME_FAMILLY = "appointmentgru.attribute.user.name.family";
+    private static final String PROPERTIES_ATTRIBUTE_USER_HOMEINFO_ONLINE_EMAIL = "appointmentgru.attribute.user.home-info.online.email";
+    private static final String PROPERTIES_ATTRIBUTE_USER_HOMEINFO_TELECOM_TELEPHONE_NUMBER = "appointmentgru.attribute.user.home-info.telecom.telephone.number";
+    private static final String PROPERTIES_ATTRIBUTE_USER_HOMEINFO_TELECOM_MOBILE_NUMBER = "appointmentgru.attribute.user.home-info.telecom.mobile.number";
+    private static final String APPLICATION_CODE = AppPropertiesService.getProperty( PROPERTIES_APPLICATION_CODE );
+    private static final String ATTRIBUTE_IDENTITY_NAME_GIVEN = AppPropertiesService.getProperty( PROPERTIES_ATTRIBUTE_USER_NAME_GIVEN );
+    private static final String ATTRIBUTE_IDENTITY_NAME_FAMILLY = AppPropertiesService.getProperty( PROPERTIES_ATTRIBUTE_USER_NAME_FAMILLY );
+    private static final String ATTRIBUTE_IDENTITY_HOMEINFO_ONLINE_EMAIL = AppPropertiesService.getProperty( PROPERTIES_ATTRIBUTE_USER_HOMEINFO_ONLINE_EMAIL );
+    private static final String ATTRIBUTE_IDENTITY_HOMEINFO_TELECOM_TELEPHONE_NUMBER = AppPropertiesService.getProperty( PROPERTIES_ATTRIBUTE_USER_HOMEINFO_TELECOM_TELEPHONE_NUMBER );
+    private static final String ATTRIBUTE_IDENTITY_HOMEINFO_TELECOM_MOBILE_NUMBER = AppPropertiesService.getProperty( PROPERTIES_ATTRIBUTE_USER_HOMEINFO_TELECOM_MOBILE_NUMBER );
     
-    /** The Constant BEAN_NAME. */
+    
+    // Beans
     public static final String BEAN_NAME = "appointmentgru.appointmentGruService";
+    private static final String BEAN_IDENTITYSTORE_SERVICE = "appointmentgru.identitystore.service";
+    
+    // Services
+    private static IdentityService _identityService;
     
     /** Instance of the service. */
     private static volatile AppointmentGruService _instance;
@@ -76,6 +98,7 @@ public class AppointmentGruService
     {
         if ( _instance == null )
         {
+            _identityService = SpringContextService.getBean( BEAN_IDENTITYSTORE_SERVICE );
             _instance = SpringContextService.getBean( BEAN_NAME );
         }
 
@@ -95,36 +118,47 @@ public class AppointmentGruService
         AppointmentGru appointmentGru = new AppointmentGru( appointment );
         String strGuid = null;
         String strCuid = null;
+        
         //hack for appointment when they make guid = admin admin
-        AppLogService.info( "AppointmentGru DEBUT  : appointment.getIdUser() : " + appointment.getIdUser(  ) );
-
         if ( StringUtils.isNumeric( appointment.getIdUser(  ) ) )
         {
             strCuid = appointment.getIdUser(  );
-            AppLogService.info( "AppointmentGru TEST  : strCuid OK " + appointment.getIdUser(  ) );
         }
         else
         {
             strGuid = appointment.getIdUser(  );
-            AppLogService.info( "AppointmentGru TEST  : strGuid OK " + appointment.getIdUser(  ) );
         }
 
-        AppLogService.info( "AppointmentGru  : GUID from appointment Guid: " + strGuid );
-        AppLogService.info( "AppointmentGru  : GUID from appointment Cuid: " + strCuid );
+        if ( AppLogService.isDebugEnabled(  ) )
+        {
+            AppLogService.debug( "AppointmentGru  : GUID from appointment Guid: " + strGuid );
+            AppLogService.debug( "AppointmentGru  : GUID from appointment Cuid: " + strCuid );
+        }
+        
+        IdentityChangeDto identityChangeDto = new IdentityChangeDto(  );
+        IdentityDto identityDto = buildIdentity( appointment, strKey );
 
-        Customer gruCustomer = ProvisioningService.processGuidCuid( strGuid, strCuid,
-                buildUserFromAppointment( appointment, strKey ) );
+        identityChangeDto.setIdentity( identityDto );
+
+        AuthorDto authorDto = new AuthorDto(  );
+        authorDto.setApplicationCode( APPLICATION_CODE );
+
+        identityChangeDto.setAuthor( authorDto );
+
+        identityDto = _identityService.createIdentity( identityChangeDto, StringUtils.EMPTY );
 
         //call provisioning
-        if ( gruCustomer != null )
+        if ( identityDto != null )
         {
-            AppLogService.info( "\n\n\n------------------ AppointmentGru  -----------------------------" );
-            AppLogService.info( "AppointmentGru  : gruCustomer.getAccountGuid() : " + gruCustomer.getAccountGuid(  ) );
-            AppLogService.info( "AppointmentGru  : gruCustomer.getId() : " + gruCustomer.getId(  ) );
-
-            appointmentGru.setGuid( gruCustomer.getAccountGuid(  ) );
-            appointmentGru.setCuid( gruCustomer.getId(  ) );
-            appointmentGru.setMobilePhoneNumber( gruCustomer.getMobilePhone(  ) );
+            appointmentGru.setGuid( identityDto.getConnectionId(  ) );
+            appointmentGru.setCuid( identityDto.getCustomerId(  ) );
+            
+            AttributeDto attributeMobilePhone = identityDto.getAttributes(  ).get( ATTRIBUTE_IDENTITY_HOMEINFO_TELECOM_MOBILE_NUMBER );
+            
+            if ( attributeMobilePhone != null )
+            {
+                appointmentGru.setMobilePhoneNumber( attributeMobilePhone.getValue(  ) );
+            }
         }
 
         return appointmentGru;
@@ -132,31 +166,50 @@ public class AppointmentGruService
 
   
     /**
-     * Builds the user from appointment.
+     * Builds an identity from appointment.
      *
      * @param appointment the appointment
-     * @param strKey the str key
-     * @return the user dto
+     * @param strKey the key
+     * @return the identity 
      */
-    private UserDTO buildUserFromAppointment( Appointment appointment, String strKey )
+    private IdentityDto buildIdentity( Appointment appointment, String strKey )
     {
-        UserDTO user = null;
+        IdentityDto identityDto = null;
+        Map<String, AttributeDto> mapAttributes = new HashMap<String, AttributeDto>(  );
 
         if ( appointment != null )
         {
-            user = new UserDTO(  );
-            user.setFirstname( appointment.getFirstName(  ) );
-            user.setLastname( appointment.getLastName(  ) );
-            user.setEmail( appointment.getEmail(  ) );
-            user.setUid( appointment.getIdUser(  ) );
-            user.setTelephoneNumber( getMobilePhoneNumber( appointment, strKey ) );
-            user.setFixedPhoneNumber( getFixedPhoneNumber( appointment, strKey ) );
+            identityDto = new IdentityDto(  );
+            identityDto.setAttributes( mapAttributes );
+            
+            identityDto.setConnectionId( appointment.getIdUser(  ) );
+            
+            setAttribute( identityDto, ATTRIBUTE_IDENTITY_NAME_GIVEN, appointment.getFirstName(  ) );
+            setAttribute( identityDto, ATTRIBUTE_IDENTITY_NAME_FAMILLY, appointment.getLastName(  ) );
+            setAttribute( identityDto, ATTRIBUTE_IDENTITY_HOMEINFO_ONLINE_EMAIL, appointment.getEmail(  ) );
+            setAttribute( identityDto, ATTRIBUTE_IDENTITY_HOMEINFO_TELECOM_TELEPHONE_NUMBER,
+                    getMobilePhoneNumber( appointment, strKey ) );
+            setAttribute( identityDto, ATTRIBUTE_IDENTITY_HOMEINFO_TELECOM_MOBILE_NUMBER,
+                    getFixedPhoneNumber( appointment, strKey ) );
         }
 
-        return user;
+        return identityDto;
     }
     
+    /**
+     * Sets an attribute into the specified identity
+     * @param identityDto the identity
+     * @param strCode the attribute code
+     * @param strValue the attribute value
+     */
+    private static void setAttribute( IdentityDto identityDto, String strCode, String strValue )
+    {
+        AttributeDto attributeDto = new AttributeDto(  );
+        attributeDto.setKey( strCode );
+        attributeDto.setValue( strValue );
 
+        identityDto.getAttributes(  ).put( attributeDto.getKey(  ), attributeDto );
+    }
     
 
     /**
