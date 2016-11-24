@@ -45,8 +45,8 @@ public class AppointmentGru
     // Variables declarations 
     private String _strGuid;
 
-    /** The _n cuid. */
-    private int _nCuid;
+    /** The _str cuid. */
+    private String _nCuid;
 
     /** The _appointment. */
     private Appointment _appointment;
@@ -152,7 +152,7 @@ public class AppointmentGru
      *
      * @return The Cuid
      */
-    public int getCuid(  )
+    public String getCuid(  )
     {
         return _nCuid;
     }
@@ -162,7 +162,7 @@ public class AppointmentGru
      *
      * @param nCuid The Cuid
      */
-    public void setCuid( int nCuid )
+    public void setCuid( String nCuid )
     {
         _nCuid = nCuid;
     }

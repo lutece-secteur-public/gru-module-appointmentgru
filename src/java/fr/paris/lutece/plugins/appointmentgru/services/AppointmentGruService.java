@@ -132,10 +132,13 @@ public class AppointmentGruService
             AppLogService.debug( "AppointmentGru  : GUID from appointment Cuid: " + strCuid );
         }
 
-        IdentityChangeDto identityChangeDto = new IdentityChangeDto(  );
-        IdentityDto identityDto = buildIdentity( appointment, strKey );
-
-        identityChangeDto.setIdentity( identityDto );
+       
+       IdentityDto identityDto = buildIdentity( appointment, strKey );
+       
+       // IL n y a plus de creation d'identitée dans l'api identitystore si le compte n'existe pas dans moncompte
+       /*
+         IdentityChangeDto identityChangeDto = new IdentityChangeDto(  );
+         identityChangeDto.setIdentity( identityDto );
 
         AuthorDto authorDto = new AuthorDto(  );
         authorDto.setApplicationCode( APPLICATION_CODE );
@@ -143,7 +146,7 @@ public class AppointmentGruService
         identityChangeDto.setAuthor( authorDto );
 
         identityDto = _identityService.createIdentity( identityChangeDto, StringUtils.EMPTY );
-
+		*/
         //call provisioning
         if ( identityDto != null )
         {
