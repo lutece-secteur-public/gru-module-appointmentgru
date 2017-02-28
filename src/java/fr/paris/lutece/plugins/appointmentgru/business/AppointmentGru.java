@@ -35,14 +35,13 @@ package fr.paris.lutece.plugins.appointmentgru.business;
 
 import fr.paris.lutece.plugins.appointment.business.Appointment;
 
-
 /**
  * This is the business class for the object AppointmentGru.
  */
 public class AppointmentGru
 {
     /** The _str guid. */
-    // Variables declarations 
+    // Variables declarations
     private String _strGuid;
 
     /** The _str cuid. */
@@ -57,10 +56,14 @@ public class AppointmentGru
     /** The _str fixed phone number. */
     private String _strFixedPhoneNumber;
 
+    /** The _n type of the demand */
+    private int _nDemandeTypeId;
+
     /**
      * Instantiates a new appointment gru.
      *
-     * @param appointment the appointment
+     * @param appointment
+     *            the appointment
      */
     public AppointmentGru( Appointment appointment )
     {
@@ -72,7 +75,7 @@ public class AppointmentGru
      *
      * @return the _strFixedPhoneNumber
      */
-    public String getFixedPhoneNumber(  )
+    public String getFixedPhoneNumber( )
     {
         return _strFixedPhoneNumber;
     }
@@ -80,7 +83,8 @@ public class AppointmentGru
     /**
      * Sets the fixed phone number.
      *
-     * @param fixedPhoneNumber the new fixed phone number
+     * @param fixedPhoneNumber
+     *            the new fixed phone number
      */
     public void setFixedPhoneNumber( String fixedPhoneNumber )
     {
@@ -92,7 +96,7 @@ public class AppointmentGru
      *
      * @return the _appointment
      */
-    public Appointment getAppointment(  )
+    public Appointment getAppointment( )
     {
         return _appointment;
     }
@@ -100,7 +104,8 @@ public class AppointmentGru
     /**
      * Sets the appointment.
      *
-     * @param appointment the new appointment
+     * @param appointment
+     *            the new appointment
      */
     public void setAppointment( Appointment appointment )
     {
@@ -112,7 +117,7 @@ public class AppointmentGru
      *
      * @return The _strMobilePhoneNumber
      */
-    public String getMobilePhoneNumber(  )
+    public String getMobilePhoneNumber( )
     {
         return _strMobilePhoneNumber;
     }
@@ -120,7 +125,8 @@ public class AppointmentGru
     /**
      * Sets the mobilePhoneNumber.
      *
-     * @param mobilePhoneNumber The mobilePhoneNumber
+     * @param mobilePhoneNumber
+     *            The mobilePhoneNumber
      */
     public void setMobilePhoneNumber( String mobilePhoneNumber )
     {
@@ -132,7 +138,7 @@ public class AppointmentGru
      *
      * @return The Guid
      */
-    public String getGuid(  )
+    public String getGuid( )
     {
         return _strGuid;
     }
@@ -140,7 +146,8 @@ public class AppointmentGru
     /**
      * Sets the Guid.
      *
-     * @param strGuid The Guid
+     * @param strGuid
+     *            The Guid
      */
     public void setGuid( String strGuid )
     {
@@ -152,7 +159,7 @@ public class AppointmentGru
      *
      * @return The Cuid
      */
-    public String getCuid(  )
+    public String getCuid( )
     {
         return _nCuid;
     }
@@ -160,10 +167,29 @@ public class AppointmentGru
     /**
      * Sets the Cuid.
      *
-     * @param nCuid The Cuid
+     * @param nCuid
+     *            The Cuid
      */
     public void setCuid( String nCuid )
     {
         _nCuid = nCuid;
     }
+
+    /**
+     * @return the DemandeTypeId
+     */
+    public int getDemandeTypeId( )
+    {
+        return _nDemandeTypeId;
+    }
+
+    /**
+     * @param nDemandeTypeId
+     *            the DemandeTypeId to set
+     */
+    public void setDemandeTypeId( int nDemandeTypeId )
+    {
+        this._nDemandeTypeId = nDemandeTypeId;
+    }
+
 }

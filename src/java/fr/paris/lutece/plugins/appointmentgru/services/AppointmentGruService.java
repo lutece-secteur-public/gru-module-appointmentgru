@@ -133,6 +133,7 @@ public class AppointmentGruService
                 appointmentGru.setMobilePhoneNumber( attributeMobilePhone.getValue( ) );
             }
         }
+        appointmentGru.setDemandeTypeId( getDemandeTypeId( appointment, strKey ) );
 
         return appointmentGru;
     }
@@ -243,5 +244,19 @@ public class AppointmentGruService
         }
 
         return strPhoneNumber;
+    }
+
+    private int getDemandeTypeId( Appointment appointment, String strKey )
+    {
+        NotifygruMappingManager mapping = NotifygruMappingManagerHome.findByPrimaryKey( strKey );
+
+        if ( mapping != null )
+        {
+            return mapping.getDemandeTypeId( );
+        }
+        else
+        {
+            return 0;
+        }
     }
 }
