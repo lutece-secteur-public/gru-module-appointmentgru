@@ -39,8 +39,8 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
-import fr.paris.lutece.plugins.appointment.business.Appointment;
-import fr.paris.lutece.plugins.appointment.business.AppointmentHome;
+import fr.paris.lutece.plugins.appointment.business.appointment.Appointment;
+import fr.paris.lutece.plugins.appointment.service.AppointmentResponseService;
 import fr.paris.lutece.plugins.appointmentgru.business.AppointmentGru;
 import fr.paris.lutece.plugins.genericattributes.business.Entry;
 import fr.paris.lutece.plugins.genericattributes.business.EntryHome;
@@ -56,207 +56,172 @@ import fr.paris.lutece.portal.service.util.AppPropertiesService;
 /**
  * The Class AppointmentGruService.
  */
-public class AppointmentGruService
-{
-    // Properties
-    private static final String PROPERTIES_ATTRIBUTE_USER_HOMEINFO_TELECOM_TELEPHONE_NUMBER = "appointmentgru.attribute.user.home-info.telecom.telephone.number";
-    private static final String PROPERTIES_ATTRIBUTE_USER_HOMEINFO_TELECOM_MOBILE_NUMBER = "appointmentgru.attribute.user.home-info.telecom.mobile.number";
-    private static final String ATTRIBUTE_IDENTITY_HOMEINFO_TELECOM_TELEPHONE_NUMBER = AppPropertiesService
-            .getProperty( PROPERTIES_ATTRIBUTE_USER_HOMEINFO_TELECOM_TELEPHONE_NUMBER );
-    private static final String ATTRIBUTE_IDENTITY_HOMEINFO_TELECOM_MOBILE_NUMBER = AppPropertiesService
-            .getProperty( PROPERTIES_ATTRIBUTE_USER_HOMEINFO_TELECOM_MOBILE_NUMBER );
+public class AppointmentGruService {
+	// Properties
+	private static final String PROPERTIES_ATTRIBUTE_USER_HOMEINFO_TELECOM_TELEPHONE_NUMBER = "appointmentgru.attribute.user.home-info.telecom.telephone.number";
+	private static final String PROPERTIES_ATTRIBUTE_USER_HOMEINFO_TELECOM_MOBILE_NUMBER = "appointmentgru.attribute.user.home-info.telecom.mobile.number";
+	private static final String ATTRIBUTE_IDENTITY_HOMEINFO_TELECOM_TELEPHONE_NUMBER = AppPropertiesService
+			.getProperty(PROPERTIES_ATTRIBUTE_USER_HOMEINFO_TELECOM_TELEPHONE_NUMBER);
+	private static final String ATTRIBUTE_IDENTITY_HOMEINFO_TELECOM_MOBILE_NUMBER = AppPropertiesService
+			.getProperty(PROPERTIES_ATTRIBUTE_USER_HOMEINFO_TELECOM_MOBILE_NUMBER);
 
-    // Beans
-    public static final String BEAN_NAME = "appointmentgru.appointmentGruService";
+	// Beans
+	public static final String BEAN_NAME = "appointmentgru.appointmentGruService";
 
-    /** Instance of the service. */
-    private static volatile AppointmentGruService _instance;
+	/** Instance of the service. */
+	private static volatile AppointmentGruService _instance;
 
-    /**
-     * Singleton AppointmentGruService Get an instance of the service.
-     *
-     * @return An instance of the service
-     */
-    public static AppointmentGruService getService( )
-    {
-        if ( _instance == null )
-        {
-            _instance = SpringContextService.getBean( BEAN_NAME );
-        }
+	/**
+	 * Singleton AppointmentGruService Get an instance of the service.
+	 *
+	 * @return An instance of the service
+	 */
+	public static AppointmentGruService getService() {
+		if (_instance == null) {
+			_instance = SpringContextService.getBean(BEAN_NAME);
+		}
 
-        return _instance;
-    }
+		return _instance;
+	}
 
-    /**
-     * Gets the appointment gru.
-     *
-     * @param appointment
-     *            the appointment
-     * @param strKey
-     *            the str key
-     * @return the appointment gru
-     */
-    public AppointmentGru getAppointmentGru( Appointment appointment, String strKey )
-    {
-        AppointmentGru appointmentGru = new AppointmentGru( appointment );
-        String strGuid = null;
-        String strCuid = null;
+	/**
+	 * Gets the appointment gru.
+	 *
+	 * @param appointment
+	 *            the appointment
+	 * @param strKey
+	 *            the str key
+	 * @return the appointment gru
+	 */
+	public AppointmentGru getAppointmentGru(Appointment appointment, String strKey) {
+		AppointmentGru appointmentGru = new AppointmentGru(appointment);
+		if (AppLogService.isDebugEnabled()) {
+			AppLogService.debug("AppointmentGru  : GUID from appointment Cuid: " + appointment.getIdUser());
+		}
 
-        // hack for appointment when they make guid = admin admin
-        if ( StringUtils.isNumeric( appointment.getIdUser( ) ) )
-        {
-            strCuid = appointment.getIdUser( );
-        }
-        else
-        {
-            strGuid = appointment.getIdUser( );
-        }
+		IdentityDto identityDto = buildIdentity(appointment, strKey);
 
-        if ( AppLogService.isDebugEnabled( ) )
-        {
-            AppLogService.debug( "AppointmentGru  : GUID from appointment Guid: " + strGuid );
-            AppLogService.debug( "AppointmentGru  : GUID from appointment Cuid: " + strCuid );
-        }
+		// call provisioning
+		if (identityDto != null) {
+			appointmentGru.setGuid(identityDto.getConnectionId());
+			appointmentGru.setCuid(identityDto.getCustomerId());
 
-        IdentityDto identityDto = buildIdentity( appointment, strKey );
+			AttributeDto attributeMobilePhone = identityDto.getAttributes()
+					.get(ATTRIBUTE_IDENTITY_HOMEINFO_TELECOM_MOBILE_NUMBER);
 
-        // call provisioning
-        if ( identityDto != null )
-        {
-            appointmentGru.setGuid( identityDto.getConnectionId( ) );
-            appointmentGru.setCuid( identityDto.getCustomerId( ) );
+			if (attributeMobilePhone != null) {
+				appointmentGru.setMobilePhoneNumber(attributeMobilePhone.getValue());
+			}
+		}
+		appointmentGru.setDemandeTypeId(getDemandeTypeId(appointment, strKey));
 
-            AttributeDto attributeMobilePhone = identityDto.getAttributes( ).get( ATTRIBUTE_IDENTITY_HOMEINFO_TELECOM_MOBILE_NUMBER );
+		return appointmentGru;
+	}
 
-            if ( attributeMobilePhone != null )
-            {
-                appointmentGru.setMobilePhoneNumber( attributeMobilePhone.getValue( ) );
-            }
-        }
-        appointmentGru.setDemandeTypeId( getDemandeTypeId( appointment, strKey ) );
+	/**
+	 * Builds an identity from appointment.
+	 *
+	 * @param appointment
+	 *            the appointment
+	 * @param strKey
+	 *            the key
+	 * @return the identity
+	 */
+	private IdentityDto buildIdentity(Appointment appointment, String strKey) {
+		IdentityDto identityDto = null;
+		Map<String, AttributeDto> mapAttributes = new HashMap<String, AttributeDto>();
 
-        return appointmentGru;
-    }
+		if (appointment != null) {
+			identityDto = new IdentityDto();
 
-    /**
-     * Builds an identity from appointment.
-     *
-     * @param appointment
-     *            the appointment
-     * @param strKey
-     *            the key
-     * @return the identity
-     */
-    private IdentityDto buildIdentity( Appointment appointment, String strKey )
-    {
-        IdentityDto identityDto = null;
-        Map<String, AttributeDto> mapAttributes = new HashMap<String, AttributeDto>( );
+			identityDto.setConnectionId(new Integer(appointment.getIdUser()).toString());
+			mapAttributes.put(ATTRIBUTE_IDENTITY_HOMEINFO_TELECOM_MOBILE_NUMBER, buildAttribute(
+					ATTRIBUTE_IDENTITY_HOMEINFO_TELECOM_MOBILE_NUMBER, getMobilePhoneNumber(appointment, strKey)));
+			mapAttributes.put(ATTRIBUTE_IDENTITY_HOMEINFO_TELECOM_TELEPHONE_NUMBER, buildAttribute(
+					ATTRIBUTE_IDENTITY_HOMEINFO_TELECOM_TELEPHONE_NUMBER, getFixedPhoneNumber(appointment, strKey)));
+			identityDto.setAttributes(mapAttributes);
+		}
 
-        if ( appointment != null )
-        {
-            identityDto = new IdentityDto( );
+		return identityDto;
+	}
 
-            identityDto.setConnectionId( appointment.getIdUser( ) );
-            mapAttributes.put( ATTRIBUTE_IDENTITY_HOMEINFO_TELECOM_MOBILE_NUMBER,
-                    buildAttribute( ATTRIBUTE_IDENTITY_HOMEINFO_TELECOM_MOBILE_NUMBER, getMobilePhoneNumber( appointment, strKey ) ) );
-            mapAttributes.put( ATTRIBUTE_IDENTITY_HOMEINFO_TELECOM_TELEPHONE_NUMBER,
-                    buildAttribute( ATTRIBUTE_IDENTITY_HOMEINFO_TELECOM_TELEPHONE_NUMBER, getFixedPhoneNumber( appointment, strKey ) ) );
-            identityDto.setAttributes( mapAttributes );
-        }
+	/**
+	 * build an attributeDTO
+	 * 
+	 * @param strCode
+	 *            the attribute code
+	 * @param strValue
+	 *            the attribute value
+	 */
+	private static AttributeDto buildAttribute(String strCode, String strValue) {
+		AttributeDto attributeDto = new AttributeDto();
+		attributeDto.setKey(strCode);
+		attributeDto.setValue(strValue);
 
-        return identityDto;
-    }
+		return attributeDto;
+	}
 
-    /**
-     * build an attributeDTO
-     * 
-     * @param strCode
-     *            the attribute code
-     * @param strValue
-     *            the attribute value
-     */
-    private static AttributeDto buildAttribute( String strCode, String strValue )
-    {
-        AttributeDto attributeDto = new AttributeDto( );
-        attributeDto.setKey( strCode );
-        attributeDto.setValue( strValue );
+	/**
+	 * Gets the mobile phone number.
+	 *
+	 * @param appointment
+	 *            the appointment
+	 * @param strKey
+	 *            the str key
+	 * @return the mobile phone number
+	 */
+	private String getMobilePhoneNumber(Appointment appointment, String strKey) {
+		NotifygruMappingManager mapping = NotifygruMappingManagerHome.findByPrimaryKey(strKey);
+		String strPhoneNumber = StringUtils.EMPTY;
+		List<Response> listResponses = AppointmentResponseService.findListResponse(appointment.getIdAppointment());
 
-        return attributeDto;
-    }
+		if (mapping != null) {
+			for (Response response : listResponses) {
+				Entry entry = EntryHome.findByPrimaryKey(response.getEntry().getIdEntry());
 
-    /**
-     * Gets the mobile phone number.
-     *
-     * @param appointment
-     *            the appointment
-     * @param strKey
-     *            the str key
-     * @return the mobile phone number
-     */
-    private String getMobilePhoneNumber( Appointment appointment, String strKey )
-    {
-        NotifygruMappingManager mapping = NotifygruMappingManagerHome.findByPrimaryKey( strKey );
-        String strPhoneNumber = "";
-        List<Response> listResponses = AppointmentHome.findListResponse( appointment.getIdAppointment( ) );
+				if (entry.getPosition() == mapping.getMobilePhoneNumber()) {
+					strPhoneNumber = response.getResponseValue();
+				}
+			}
+		}
 
-        if ( mapping != null )
-        {
-            for ( Response response : listResponses )
-            {
-                Entry entry = EntryHome.findByPrimaryKey( response.getEntry( ).getIdEntry( ) );
+		return strPhoneNumber;
+	}
 
-                if ( entry.getPosition( ) == mapping.getMobilePhoneNumber( ) )
-                {
-                    strPhoneNumber = response.getResponseValue( );
-                }
-            }
-        }
+	/**
+	 * Gets the fixed phone number.
+	 *
+	 * @param appointment
+	 *            the appointment
+	 * @param strKey
+	 *            the str key
+	 * @return the fixed phone number
+	 */
+	private String getFixedPhoneNumber(Appointment appointment, String strKey) {
+		NotifygruMappingManager mapping = NotifygruMappingManagerHome.findByPrimaryKey(strKey);
+		String strPhoneNumber = StringUtils.EMPTY;
+		List<Response> listResponses = AppointmentResponseService.findListResponse(appointment.getIdAppointment());
 
-        return strPhoneNumber;
-    }
+		if (mapping != null) {
+			for (Response response : listResponses) {
+				Entry entry = EntryHome.findByPrimaryKey(response.getEntry().getIdEntry());
 
-    /**
-     * Gets the fixed phone number.
-     *
-     * @param appointment
-     *            the appointment
-     * @param strKey
-     *            the str key
-     * @return the fixed phone number
-     */
-    private String getFixedPhoneNumber( Appointment appointment, String strKey )
-    {
-        NotifygruMappingManager mapping = NotifygruMappingManagerHome.findByPrimaryKey( strKey );
-        String strPhoneNumber = "";
-        List<Response> listResponses = AppointmentHome.findListResponse( appointment.getIdAppointment( ) );
+				if (entry.getPosition() == mapping.getFixedPhoneNumber()) {
+					strPhoneNumber = response.getResponseValue();
+				}
+			}
+		}
 
-        if ( mapping != null )
-        {
-            for ( Response response : listResponses )
-            {
-                Entry entry = EntryHome.findByPrimaryKey( response.getEntry( ).getIdEntry( ) );
+		return strPhoneNumber;
+	}
 
-                if ( entry.getPosition( ) == mapping.getFixedPhoneNumber( ) )
-                {
-                    strPhoneNumber = response.getResponseValue( );
-                }
-            }
-        }
+	private int getDemandeTypeId(Appointment appointment, String strKey) {
+		NotifygruMappingManager mapping = NotifygruMappingManagerHome.findByPrimaryKey(strKey);
 
-        return strPhoneNumber;
-    }
-
-    private int getDemandeTypeId( Appointment appointment, String strKey )
-    {
-        NotifygruMappingManager mapping = NotifygruMappingManagerHome.findByPrimaryKey( strKey );
-
-        if ( mapping != null )
-        {
-            return mapping.getDemandeTypeId( );
-        }
-        else
-        {
-            return 0;
-        }
-    }
+		if (mapping != null) {
+			return mapping.getDemandeTypeId();
+		} else {
+			return 0;
+		}
+	}
 }

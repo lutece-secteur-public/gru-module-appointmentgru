@@ -33,7 +33,7 @@
  */
 package fr.paris.lutece.plugins.appointmentgru.business;
 
-import fr.paris.lutece.plugins.appointment.business.Appointment;
+import fr.paris.lutece.plugins.appointment.business.appointment.Appointment;
 
 /**
  * This is the business class for the object AppointmentGru.
