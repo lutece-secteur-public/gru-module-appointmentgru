@@ -101,7 +101,7 @@ public class AppointmentGruService
         AppointmentGru appointmentGru = new AppointmentGru( appointment );
         if ( AppLogService.isDebugEnabled( ) )
         {
-            AppLogService.debug( "AppointmentGru  : GUID from appointment Cuid: " + appointment.getIdUser( ) );
+            AppLogService.debug( "AppointmentGru  : GUID from appointment Cuid: " + appointment.getGuid() );
         }
 
         IdentityDto identityDto = buildIdentity( appointment, strKey );
