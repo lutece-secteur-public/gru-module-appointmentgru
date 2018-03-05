@@ -142,7 +142,7 @@ public class AppointmentGruService
         {
             identityDto = new IdentityDto( );
 
-            identityDto.setConnectionId( Integer.toString( appointment.getIdUser( ) ) );
+            identityDto.setConnectionId( appointment.getGuid( ) );
             mapAttributes.put( ATTRIBUTE_IDENTITY_HOMEINFO_TELECOM_MOBILE_NUMBER,
                     buildAttribute( ATTRIBUTE_IDENTITY_HOMEINFO_TELECOM_MOBILE_NUMBER, getMobilePhoneNumber( appointment, strKey ) ) );
             mapAttributes.put( ATTRIBUTE_IDENTITY_HOMEINFO_TELECOM_TELEPHONE_NUMBER,
