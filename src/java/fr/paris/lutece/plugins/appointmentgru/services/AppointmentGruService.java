@@ -136,7 +136,7 @@ public class AppointmentGruService
     private IdentityDto buildIdentity( Appointment appointment, String strKey )
     {
         IdentityDto identityDto = null;
-        Map<String, AttributeDto> mapAttributes = new HashMap<String, AttributeDto>( );
+        Map<String, AttributeDto> mapAttributes = new HashMap<>( );
 
         if ( appointment != null )
         {
