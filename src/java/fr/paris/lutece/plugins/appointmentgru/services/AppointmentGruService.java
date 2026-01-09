@@ -191,10 +191,12 @@ public class AppointmentGruService
             {
                 Entry entry = EntryHome.findByPrimaryKey( response.getEntry( ).getIdEntry( ) );
 
-                if ( entry.getPosition( ) == mapping.getMobilePhoneNumber( ) )
+                // (ignore conditional entries, that may have duplicate position number)
+                if ( entry.getFieldDepend( ) == null && entry.getPosition( ) == mapping.getMobilePhoneNumber( ) )
                 {
                     strPhoneNumber = response.getResponseValue( );
-                }
+                    break;
+                }                
             }
         }
 
@@ -222,9 +224,11 @@ public class AppointmentGruService
             {
                 Entry entry = EntryHome.findByPrimaryKey( response.getEntry( ).getIdEntry( ) );
 
-                if ( entry.getPosition( ) == mapping.getFixedPhoneNumber( ) )
+                // (ignore conditional entries, that may have duplicate position number)
+                if ( entry.getFieldDepend( ) == null && entry.getPosition( ) == mapping.getFixedPhoneNumber( ) )
                 {
                     strPhoneNumber = response.getResponseValue( );
+                    break;
                 }
             }
         }
