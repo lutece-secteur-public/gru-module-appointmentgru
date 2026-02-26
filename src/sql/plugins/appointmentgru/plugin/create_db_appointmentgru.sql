@@ -1,3 +1,6 @@
+-- liquibase formatted sql
+-- changeset appointmentgru:create_db_appointmentgru.sql
+-- preconditions onFail:MARK_RAN onError:WARN
 
 --
 -- Structure for table appointmentgru_
