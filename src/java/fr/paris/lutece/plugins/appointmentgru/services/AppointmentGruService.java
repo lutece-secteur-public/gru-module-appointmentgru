@@ -35,7 +35,7 @@ package fr.paris.lutece.plugins.appointmentgru.services;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import fr.paris.lutece.plugins.appointment.business.appointment.Appointment;
 import fr.paris.lutece.plugins.appointment.service.AppointmentResponseService;
@@ -45,34 +45,19 @@ import fr.paris.lutece.plugins.genericattributes.business.EntryHome;
 import fr.paris.lutece.plugins.genericattributes.business.Response;
 import fr.paris.lutece.plugins.modulenotifygrumappingmanager.business.NotifygruMappingManager;
 import fr.paris.lutece.plugins.modulenotifygrumappingmanager.business.NotifygruMappingManagerHome;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppLogService;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Named;
 
 /**
  * The Class AppointmentGruService.
  */
+@ApplicationScoped
+@Named( AppointmentGruService.BEAN_NAME )
 public class AppointmentGruService
 {
     // Beans
     public static final String BEAN_NAME = "appointmentgru.appointmentGruService";
-
-    /** Instance of the service. */
-    private static volatile AppointmentGruService _instance;
-
-    /**
-     * Singleton AppointmentGruService Get an instance of the service.
-     *
-     * @return An instance of the service
-     */
-    public static AppointmentGruService getService( )
-    {
-        if ( _instance == null )
-        {
-            _instance = SpringContextService.getBean( BEAN_NAME );
-        }
-
-        return _instance;
-    }
 
     /**
      * Gets the appointment gru.
@@ -86,16 +71,17 @@ public class AppointmentGruService
     public AppointmentGru getAppointmentGru( Appointment appointment, String strMappingKey )
     {
         AppointmentGru appointmentGru = new AppointmentGru( appointment );
-        if ( AppLogService.isDebugEnabled( ) )
-        {
-            AppLogService.debug( "AppointmentGru  : GUID from appointment Cuid: " + appointment.getGuid( ) );
-        }
 
         // provisioning
         if ( appointment != null )
         {
-            appointmentGru.setGuid( appointment.getGuid( ) );
-           
+            if ( appointment.getUser( ) != null )
+            {
+                AppLogService.debug( "AppointmentGru : GUID from appointment Cuid: {}", appointment.getUser( ).getGuid( ) );
+
+                appointmentGru.setGuid( appointment.getUser( ).getGuid( ) );
+            }
+
             String strMobilePhone = getMobilePhoneNumber( appointment, strMappingKey );
 
             if ( strMobilePhone != null )

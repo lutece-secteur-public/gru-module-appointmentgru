@@ -33,7 +33,7 @@
  */
 package fr.paris.lutece.appointmentgru.business;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import fr.paris.lutece.test.LuteceTestCase;
 
